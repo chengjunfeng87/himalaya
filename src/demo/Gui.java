@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -15,8 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -30,12 +35,19 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+
+import com.itextpdf.text.pdf.PdfWriter;
+
+
 public class Gui {
+	JDialog WaitingDialog;
+	JLabel label;
 	CheckBoxTreeNode rootNode = new CheckBoxTreeNode("root"); 
-	JFrame frame = new JFrame("CheckBoxTreeDemo"); 
-	
+	JFrame frame = new JFrame("Himalaya_Test"); 
     JTree tree = new JTree();
-    int i = 0;
+    Runnable updateGUI=null;
     ArrayList<LinkedList<String>> case_selected = new ArrayList<LinkedList<String>>();
     
     final  private HashMap<LinkedList<String>,String> case_list = new HashMap<LinkedList<String>,String>(){
@@ -59,6 +71,9 @@ public class Gui {
     		put(new LinkedList<String> () {{ add("CV_Export_Function"); add("Check the filename of archived packages");}},"case17");
     		put(new LinkedList<String> () {{ add("CV_Export_Function"); add("Export archived packages into destination directory");}},"case18");
     		put(new LinkedList<String> () {{ add("CV_Export_Interface"); add("Open archived file");}},"case19");
+    		put(new LinkedList<String> () {{ add("SmokeTest"); add("ProgramLoop");}},"ProgramLoop");
+    		put(new LinkedList<String> () {{ add("temp"); add("just a test");}},"temp");
+    		
     	}
     };
     
@@ -161,24 +176,47 @@ public class Gui {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(1,1));
         panel.add(scroll);
-        JTextField t1 = new JTextField();
-        JLabel l1 = new JLabel();
+        final JTextField t1 = new JTextField();
+        final JLabel l1 = new JLabel();
         l1.setText("Please input IP");
-        JTextField t2 = new JTextField();
-        JLabel l2 = new JLabel();
+        final JTextField t2 = new JTextField();
+        final JLabel l2 = new JLabel();
         l2.setText("Please input xxx");
+        JTextField t3 = new JTextField();
+        JLabel l3 = new JLabel();
+        l2.setText("Please choose program");
         JPanel panel2 = new JPanel();
         JButton ok_button = new JButton("start");
         JButton cancel_button = new JButton("cancel");
+        JButton program_icon = new JButton("program icon");
+        program_icon.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e) {
+        	     JFileChooser jfc = new JFileChooser();
+        	     if(jfc.showOpenDialog(frame)==JFileChooser.APPROVE_OPTION ){
+        	    	 t2.setText(jfc.getSelectedFile().getAbsolutePath());
+        	     }
+        	}  
+        });
         
         class ButtonclickListener implements ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				if(t1.getText().trim().equals("")){
+					JOptionPane.showMessageDialog(frame, "please input IP of instrument!", "Warning",JOptionPane.WARNING_MESSAGE);  
+					
+				}
+				else{
 				VisitAllNodes();
-				Thread t = new Thread(new exec());
-				t.start();
+				
+				exec t = new exec();
+				
+				
+				t.TransferData(t1.getText());
+				Thread thread=new Thread(t);
+				thread.start();
+				}
 			}
         	
         }
@@ -191,7 +229,7 @@ public class Gui {
         frame.add(t1);
         frame.add(l1);
         frame.add(t2);
-        frame.add(l2);
+        frame.add(program_icon);
         frame.add(panel2);
         frame.add(ok_button);
         frame.add(cancel_button);
@@ -222,7 +260,7 @@ public class Gui {
         s.gridwidth=0;
         s.weightx = 0;
         s.weighty=0;
-        layout.setConstraints(l2, s);
+        layout.setConstraints(program_icon, s);
         
         s.gridwidth=4;
         s.weightx = 1;
@@ -243,6 +281,7 @@ public class Gui {
          
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true); 
+       
 	}
 	
 	public void VisitAllNodes() {
@@ -266,12 +305,94 @@ public class Gui {
 			}
 		}		
 	}
+	public void SaveResultFile(String result){
+		
+		
+		int Option_result=JOptionPane.showConfirmDialog(frame, "Generate Test Result?", result,JOptionPane.YES_NO_OPTION,JOptionPane.INFORMATION_MESSAGE);
+		switch(Option_result){
+		case JOptionPane.YES_OPTION:
+			
+			
+			updateGUI=new Runnable(){
+				@Override
+				public void run(){
+					WaitingDialog=new JDialog();
+					label=new JLabel();
+					
+					label.setText("    generate test report...");
+					
+					WaitingDialog.setSize(200, 200);
+					WaitingDialog.getContentPane().add(label);
+					WaitingDialog.setModal(true);
+					WaitingDialog.setUndecorated(true);
+					WaitingDialog.setLocation(frame.getX()+frame.getWidth()/2-WaitingDialog.getWidth()/2, frame.getY()+frame.getHeight()/2-WaitingDialog.getHeight()/2);
+					WaitingDialog.setVisible(true);
+				}
+			};
+			SwingUtilities.invokeLater(updateGUI);
+			
+			
+			com.itextpdf.text.Document pdfDoc=new com.itextpdf.text.Document();
+			try{
+				File file=new File(System.getProperty("user.dir")+"/result.pdf");
+				if(file.exists()){
+					file.delete();
+				}
+				FileOutputStream pdfFile;
+				
+				pdfFile = new FileOutputStream(file);
+			
+		        Paragraph paragraph = new Paragraph("My first PDF file with an image ...");  
+//		        Image image = Image.getInstance("F:/study/test/洛克 李.jpg");  
+    
+					PdfWriter.getInstance(pdfDoc, pdfFile);
+				
+		        pdfDoc.open();  // 打开 Document 文档  
+		          
+		        pdfDoc.add(paragraph);  
+//		        pdfDoc.add(image);  
+		      
+		        pdfDoc.close();  
+		        }catch(FileNotFoundException | com.itextpdf.text.DocumentException e){
+		        	e.printStackTrace();
+		        	
+		        }
+			
+		
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			updateGUI=new Runnable(){
+				@Override
+				public void run(){
+					WaitingDialog.setVisible(false);
+					WaitingDialog.dispose();
+				}
+			};
+			SwingUtilities.invokeLater(updateGUI);
+			
+			break;
+		case JOptionPane.NO_OPTION:
+			break;
+		default:
+			break;
+		}
+	}
 	
 	class exec implements Runnable{
-
+		private String IP;
+		
+		public void TransferData(String IP){
+			this.IP=IP;
+		}
 		@Override
 		public void run(){
 			// TODO Auto-generated method stub
+//			System.out.println(case_selected.size());
+			ArrayList<LinkedList<String>> HaveBeenTested=new ArrayList<>();
 			for(LinkedList<String> key:case_selected) {
 				String className = "demo."+case_list.get(key);
 			
@@ -279,14 +400,23 @@ public class Gui {
 					
 					Object xyz = Class.forName(className).newInstance();
 					String methodName = "test";
-					Method getNameMethod = xyz.getClass().getMethod(methodName);
-					int result = (int)getNameMethod.invoke(xyz);
+					
+					Method getNameMethod = xyz.getClass().getMethod(methodName,String.class);
+					getNameMethod.invoke(xyz,IP);
+					HaveBeenTested.add(key);
+					
 				} catch (Exception e1) {
 				// TODO Auto-generated catch block
+					SaveResultFile("Test Failed");
 					e1.printStackTrace();
+					break;
 				}
 			
 			}
+			if(HaveBeenTested.size()==case_selected.size())	SaveResultFile("Test Complete");
+			
+			
 		}
 	}
+	
 }

@@ -21,6 +21,61 @@ spawn ssh root@$host -p 2223
 
 expect "*EBboard:~#" {
 
+send "cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n
+cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
+send "cansend can0 1038901e#0001 \n"
 send "cansend can0 1038901e#0001 \n"
 }
 sleep 1

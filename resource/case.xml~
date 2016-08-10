@@ -56,7 +56,4 @@
 			 </CV_Export_Interface>
 		</CV_Export>
 	</CV>
-	<temp>
-		<case>just a test</case>
-	</temp>
 </Testcase>

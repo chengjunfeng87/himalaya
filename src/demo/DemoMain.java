@@ -10,6 +10,9 @@ public class DemoMain
     { 
         Gui gui = new Gui();
         gui.Init();
+//		Utils s=new Utils();
+//		s.test();
         
     } 
 } 
+

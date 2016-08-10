@@ -83,7 +83,7 @@ public class abort {
 			e.printStackTrace();
 		}
 		String path = new String("./bash/ssh.sh ");
-		String Instrument = new String("10.10.234.91");
+		String Instrument = new String("10.10.234.92");
 		Process process = null;
 		int result = 9999;
 		try {
